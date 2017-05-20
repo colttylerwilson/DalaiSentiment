@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  h1#myTitle= title
+  p Colt Tyler Wilson
+        for dataObject in datalist
+            p #{dataObject.text}
+            script(type='text/javascript').                                                  
+                var local_text = !{JSON.stringify(dataObject.shape)}; 
+                var local_size = !{JSON.stringify(dataObject.size)}; 
+                var local_color = !{JSON.stringify(dataObject.color)};
+                var list = !{JSON.stringify(datalist)};
+  canvas#myCanvas2(width='650', height='450')
+  script(type='text/javascript', src='javascripts/trump.js') 
