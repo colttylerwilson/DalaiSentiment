@@ -9,11 +9,23 @@ box.style.top = "50px";
 //Fill Canvas with Hash Value of String Data
 //TODO: Fill canvas with 
 ctx.beginPath();
-ctx.rect(0, 0, 650, 450);
-console.log("\'" + intToRGB(hashCode(shapeList[0].shape)) + "\'");
+ctx.rect(0, 0, 850, 450);
+//console.log("\'" + intToRGB(hashCode(shapeList[0].shape)) + "\'");
 //ctx.fillStyle = "#" + intToRGB(hashCode(shapeList[0].shape));
 ctx.fillStyle = '#000000';
 ctx.fill();
+
+
+//------------------------- CANVAS LINE---------------------------
+var fillTextSpace = 20;
+ctx.globalAlpha = 1.00;
+ctx.strokeStyle = "#c4d3e0";
+ctx.moveTo(650, 10);
+ctx.lineTo(650, 440);
+ctx.stroke()
+ctx.globalAlpha = 0.75;
+
+//-------------------------END OF CANVAS LINE--------------------    
 
 function hashCode(str) { // java String#hashCode
     var hash = 0;
@@ -62,6 +74,14 @@ function drawNegative(x, y, index) {
     ctx.strokeStyle = shapeList[index].color;
     ctx.stroke();
     ctx.fill();
+
+    ctx.globalAlpha = 1.00;
+    ctx.font = "15px Courier New";
+    ctx.textAlign = "start";
+    ctx.fillStyle = shapeList[index].color;
+    ctx.fillText(shapeList[index].word + " -" +shapeList[index].size, 675, fillTextSpace);
+    fillTextSpace = fillTextSpace+20;   
+    ctx.globalAlpha = 0.75;
 }
 
 //Radius of the circle is half the height of the Cross
@@ -71,8 +91,15 @@ function drawPositive(x, y, index) {
     ctx.arc(x, y, (shapeList[index].size * 60) / 2, 0, 2 * Math.PI);
     ctx.fillStyle = shapeList[index].color;
     ctx.strokeStyle = shapeList[index].color;
-    ctx.stroke();
     ctx.fill();
+
+    ctx.globalAlpha = 1.00;
+    ctx.font = "15px Courier New";
+    ctx.textAlign = "start";
+    ctx.fillStyle = shapeList[index].color;
+    ctx.fillText(shapeList[index].word + " +" + shapeList[index].size, 675, fillTextSpace);
+    fillTextSpace = fillTextSpace+20;
+    ctx.globalAlpha = 0.75;
 }
 
 function drawNeutral(x, y, index) {
@@ -87,6 +114,13 @@ function drawNeutral(x, y, index) {
     ctx.lineTo(x + 40, y + 40);
     ctx.fill();
 
+    ctx.globalAlpha = 1.00;
+    ctx.font = "15px Courier New";
+    ctx.textAlign = "start";
+    ctx.fillStyle = shapeList[index].color;
+    ctx.fillText(shapeList[index].word, 675, fillTextSpace);
+    fillTextSpace = fillTextSpace+20;
+    ctx.globalAlpha = 0.75;
 }
 
 console.log("\'" + intToRGB(hashCode(shapeList[0].shape)) + "\'");

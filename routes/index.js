@@ -1,24 +1,51 @@
 var express = require('express');
 var router = express.Router();
 
+//-------------------------------------------
+// Information for the twitter API
+//-------------------------------------------
+var Twit = require('twit');
+var countLimit = 2;
+//var headlines = [];
+//var txt = [];
+
+var T = new Twit({
+    consumer_key: 'uo8Ex8A6kPqQSTU9mQ4JEDCwA',
+    consumer_secret: 'eoAftf2tIevLIxizgY7ku4qwn9lkVJtC8PbppR30ye0Kp89D3S',
+    access_token: '835704017384685569-946BgoVOlUWSNXhCmFKwNNDm2FCzwYz',
+    access_token_secret: '5equQy78EhdnBOXWrhvtUCd6EW4Y4f7Lqfzyeg4EEDB6Z',
+    timeout_ms: 60 * 1000,  // optional HTTP request timeout to apply to all requests.
+})
+//-------------------------------------------
+// END of Information for the twitter API
+//-------------------------------------------
+
+
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Sentiment Analysis~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 var retext = require('retext');
 var inspect = require('unist-util-inspect');
 var sentiment = require('retext-sentiment');
+var rootNode = [];
+grabTweet();
 
-var testString = "I was thrilled to be back @LibertyU. Congratulations to the Class of 2017! This is your day, and you've earned it.";
-var rootNode;
-
-retext()
-    .use(sentiment)
-    .use(function () {
-        return transformer;
-        function transformer(tree) {
-            rootNode = tree;
-            //console.log(inspect(tree));
+function grabTweet() {
+    T.get('statuses/user_timeline', { screen_name: 'realDonaldTrump', count: countLimit }, function (err, data, response) {
+        for (var i = 0; i < countLimit; i++) {
+            console.log("The tweet....\n" + data[i].text.replace(/\bhttp\S+/ig, "") + "\n");
+            retext()
+                .use(sentiment)
+                .use(function () {
+                    return transformer;
+                    function transformer(tree) {
+                        rootNode = tree;
+                        //console.log(inspect(tree));
+                    }
+                }).processSync(data[i].text.replace(/\bhttp\S+/ig, ""));
         }
-    }).processSync(testString);
+    });
+}
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~End of Sentiment Analysis~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
@@ -55,8 +82,8 @@ router.get('/trump', function (req, res) {
                 //console.log("INSPECTING " + inspect(rootNode.children[0].children[2]));
                 //If string node has children, then terminal is not whitespace or punctuation node
                 if ("children" in rootNode.children[0].children[x].children[i]) {
-                    //Create new shape object
                     var newShapeObject = {};
+                    //Create new shape object
                     //If string node has data, then terminal has sentiment value
                     if ("data" in rootNode.children[0].children[x].children[i].children[0]) {
                         //console.log("Sentiment Value Detected");
@@ -88,6 +115,7 @@ router.get('/trump', function (req, res) {
                         //console.log("No Sentiment Value");
                         //console.log("WORD: " + rootNode.children[0].children[0].children[i].children[0].value);
                         //If neutral, then shape is triangle
+                        console.log("INSPECTING :" + inspect(rootNode.children[0].children[x].children[i].children[0]));
                         newShapeObject.word = rootNode.children[0].children[x].children[i].children[0].value;
                         newShapeObject.shape = 'Triangle';
                         //If neutral, then size is 1
@@ -113,18 +141,20 @@ router.get('/trump', function (req, res) {
 
 //Negative Color Palettes
 var negativeColors = {
-    1: '#bdc3c7',
-    2: '#7f8c8d',
-    3: '#95a5a6',
-    4: '#34495e'
+    1: '#e9c7c1',
+    2: '#ec606a',
+    3: '#aa001d',
+    4: '#750408',
+    5: '#220307'
 };
 
 //Positive Color Palette
 var positiveColors = {
-    1: '#F48FB1',
-    2: '#BA68C8',
-    3: '#7E57C2',
-    4: '#2196F3'
+    1: '#afeeee',
+    2: '#5dd3e9',
+    3: '#0194fe',
+    4: '#012b7e',
+    5: '#011149'
 };
 
 //Neutral Color Palette

@@ -1,6 +1,6 @@
 {
-  "name": "express-example",
-  "version": "0.0.0",
+  "name": "trump-sentiment",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
     "start": "node ./bin/www"
@@ -11,13 +11,39 @@
     "debug": "~2.6.0",
     "express": "~4.14.1",
     "jade": "~1.11.0",
-    "morgan": "~1.7.0",
-    "serve-favicon": "~2.3.2",
-    "stylus": "0.54.5",
     "mongodb": "^1.4.4",
     "monk": "^1.0.1",
-    "retext-sentiment": "4.0.0",
+    "morgan": "~1.7.0",
     "retext": "5.0.0",
-    "unist-util-inspect":"4.1.0"
-  }
+    "retext-sentiment": "4.0.0",
+    "serve-favicon": "~2.3.2",
+    "stylus": "0.54.5",
+    "twit": "^2.2.5",
+    "twitter": "^1.7.0",
+    "unist-util-inspect": "4.1.0"
+  },
+  "description": "Trump Sentiment \n. . This project focuses on using the sentiment value of words to create art . . \n. . The colors and shapes of shapes on the canvas are determined by their polarity value . . \n. . This project uses twitter node packace, retext node package, MongoDB, and Node.JS . .",
+  "main": "app.js",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/colttylerwilson/TrumpSentiment.git"
+  },
+  "keywords": [
+    "sentiment",
+    "trump",
+    "twitter",
+    "art",
+    "computational",
+    "creativity",
+    "html",
+    "node.js",
+    "canvas"
+  ],
+  "author": "Colt Tyler Wilson",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/colttylerwilson/TrumpSentiment/issues"
+  },
+  "homepage": "https://github.com/colttylerwilson/TrumpSentiment#readme"
 }
