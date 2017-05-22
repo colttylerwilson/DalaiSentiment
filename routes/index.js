@@ -27,9 +27,9 @@ var inspect = require('unist-util-inspect');
 var sentiment = require('retext-sentiment');
 //Each rootNode holds one tweet string and sentiment data per tweet
 var rootNode = [];
-
+grabTweet();
 function grabTweet() {
-    T.get('statuses/user_timeline', { screen_name: 'realDonaldTrump', count: countLimit }, function (err, data, response) {
+    T.get('statuses/user_timeline', { screen_name: 'ANP14', count: countLimit }, function (err, data, response) {
         for (var i = 0; i < countLimit; i++) {
             console.log("The tweet....\n" + data[i].text.replace(/\bhttp\S+/ig, "") + "\n");
             retext()
@@ -57,10 +57,6 @@ router.get('/', function (req, res, next) {
 /* GET trump page. */
 router.get('/trump', function (req, res) {
     grabTweet();
-    var db = req.db;
-    var collection = db.get('Ceong');
-    const users = db.get('Ceong');
-    users.remove({});
     //Value of entire string is Math.abs(rootNode[z].data.polarity)
 
     //Create all shapes per word
@@ -71,26 +67,23 @@ router.get('/trump', function (req, res) {
     //For negative colors, please refer to the Negative Color Palette
     //For neutral colors, please refer to the Neutral Color Palette
 
+    var db = req.db;
+    var collection = db.get('Ceong');
+    const users = db.get('Ceong');
+    users.remove({});
     //Loop through all string nodes
     for (var z = 0; z < countLimit; z++) {
         for (var x = 0; x < rootNode[z].children[0].children.length; x++) {
-            //If children in node, then it is not whitespace.
             if ("children" in rootNode[z].children[0].children[x]) {
-                //console.log(inspect(rootNode[z].children[0].children[x]));
                 for (var i = 0; i < rootNode[z].children[0].children[x].children.length; i++) {
-                    //console.log("INSPECTING " + inspect(rootNode[z].children[0].children[2]));
                     //If string node has children, then terminal is not whitespace or punctuation node
                     if ("children" in rootNode[z].children[0].children[x].children[i]) {
-                        var newShapeObject = {};
-                        //Create new shape object
                         //If string node has data, then terminal has sentiment value
                         if ("data" in rootNode[z].children[0].children[x].children[i].children[0]) {
-                            //console.log("Sentiment Value Detected");
-                            //console.log("WORD: " + rootNode[z].children[0].children[0].children[i].children[0].value);
-                            //console.log("VALUE: " + rootNode[z].children[0].children[0].children[i].children[0].data.polarity);
 
                             //If positive
                             if (rootNode[z].children[0].children[x].children[i].children[0].data.valence === 'positive') {
+                                var newShapeObject = {};
                                 newShapeObject.word = rootNode[z].children[0].children[x].children[i].children[0].value;
                                 newShapeObject.shape = 'Circle';
                                 //Size depends on how positive the element is
@@ -98,11 +91,11 @@ router.get('/trump', function (req, res) {
                                 //Color deends on how positve the element is
                                 newShapeObject.color = positiveColors[rootNode[z].children[0].children[x].children[i].children[0].data.polarity];
                                 newShapeObject.canvas = z;
-                                //console.log("HERE WE ARE POSITIVE");
                                 users.insert(newShapeObject);
                             }
                             //If negative
                             if (rootNode[z].children[0].children[x].children[i].children[0].data.valence === 'negative') {
+                                var newShapeObject = {};
                                 newShapeObject.word = rootNode[z].children[0].children[x].children[i].children[0].value;
                                 newShapeObject.shape = 'Cross';
                                 newShapeObject.size = Math.abs(rootNode[z].children[0].children[x].children[i].children[0].data.polarity);
@@ -113,18 +106,18 @@ router.get('/trump', function (req, res) {
                         }
                         //If node does not have data, then node is neutral
                         else {
-                            //console.log("No Sentiment Value");
-                            //console.log("WORD: " + rootNode[z].children[0].children[0].children[i].children[0].value);
                             //If neutral, then shape is triangle
                             console.log("INSPECTING :" + inspect(rootNode[z].children[0].children[x].children[i].children[0]));
+                            console.log("Neutral word found !!! for canvas " + z);
+                            var newShapeObject = {};
                             newShapeObject.word = rootNode[z].children[0].children[x].children[i].children[0].value;
                             newShapeObject.shape = 'Triangle';
                             //If neutral, then size is 1
                             newShapeObject.size = 1;
                             //If neutral, then color is randomly chosen from neutral colors
-                            //console.log("Color: " + (Math.floor(Math.random() * 4) + 1));
                             newShapeObject.color = neutralColors[Math.floor(Math.random() * 4) + 1];
                             newShapeObject.canvas = z;
+                            console.log("New shape neutral object : " + newShapeObject);
                             users.insert(newShapeObject);
                         }
                     }
@@ -132,13 +125,12 @@ router.get('/trump', function (req, res) {
             }
         }
     }
-    //while (checkBegin && checkEnd) {
-        users.find({}, {}, function (e, docs) {
-            res.render('trump', {
-                "datalist": docs
-            });
+
+    users.find({}, {}, function (e, docs) {
+        res.render('trump', {
+            "datalist": docs
         });
-    //}
+    });
 });
 
 

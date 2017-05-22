@@ -5,7 +5,7 @@ var shapeList = list;
 var ctx = box.getContext("2d");
 ctx.globalAlpha = 0.75;
 ctx.beginPath();
-ctx.rect(0, 0, 850, 450);
+ctx.rect(0, 0, 850, 600);
 ctx.fillStyle = '#000000';
 ctx.fill();
 
@@ -14,7 +14,7 @@ var fillTextSpace = 20;
 ctx.globalAlpha = 1.00;
 ctx.strokeStyle = "#c4d3e0";
 ctx.moveTo(650, 10);
-ctx.lineTo(650, 440);
+ctx.lineTo(650, 590);
 ctx.stroke()
 ctx.globalAlpha = 0.75;
 
@@ -23,7 +23,7 @@ ctx.globalAlpha = 0.75;
 
 
 //ctx.fillStyle = '#000000';
-//ctx.fill();
+ctx.fill();
 run();
 
 
@@ -33,17 +33,17 @@ function run() {
         if (shapeList[i].canvas == 3) {
             if (shapeList[i].shape == 'Cross') {
                 var index = i;
-                drawNegative((Math.random() * 600), (Math.random() * 400), index);
+                drawNegative((Math.random() * 600), (Math.random() * 550), index);
             }
 
             if (shapeList[i].shape == 'Circle') {
                 var index = i;
-                drawPositive((Math.random() * 600), (Math.random() * 400), index);
+                drawPositive((Math.random() * 600), (Math.random() * 550), index);
             }
 
             if (shapeList[i].shape === 'Triangle') {
                 var index = i;
-                drawNeutral((Math.random() * 600), (Math.random() * 400), index);
+                drawNeutral((Math.random() * 600), (Math.random() * 550), index);
             }
         }
     }
