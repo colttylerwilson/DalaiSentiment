@@ -1,20 +1,13 @@
-var box = document.getElementById("myCanvas2");
+var box = document.getElementById("myCanvas1");
+box.style.position = "relative";
+box.style.top = "50px";
 var shapeList = list;
 var ctx = box.getContext("2d");
 ctx.globalAlpha = 0.75;
-box.style.position = "relative";
-box.style.top = "50px";
-//console.log("Stuffs" + shapeList[0].size + shapeList[0].color + shapeList[0].shape);
-
-//Fill Canvas with Hash Value of String Data
-//TODO: Fill canvas with 
 ctx.beginPath();
 ctx.rect(0, 0, 850, 450);
-//console.log("\'" + intToRGB(hashCode(shapeList[0].shape)) + "\'");
-//ctx.fillStyle = "#" + intToRGB(hashCode(shapeList[0].shape));
 ctx.fillStyle = '#000000';
 ctx.fill();
-
 
 //------------------------- CANVAS LINE---------------------------
 var fillTextSpace = 20;
@@ -25,32 +18,33 @@ ctx.lineTo(650, 440);
 ctx.stroke()
 ctx.globalAlpha = 0.75;
 
-//-------------------------END OF CANVAS LINE--------------------    
+//------------------------- END CANVAS LINE---------------------------
 
-function hashCode(str) { // java String#hashCode
-    var hash = 0;
-    for (var i = 0; i < str.length; i++) {
-        hash = str.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    return hash;
-}
+
+
+//ctx.fillStyle = '#000000';
+//ctx.fill();
+run();
+
 
 function run() {
     console.log("SHAPE SIZE: " + shapeList.length);
     for (var i = 0; i < shapeList.length; i++) {
-        if (shapeList[i].shape == 'Cross') {
-            var index = i;
-            drawNegative((Math.random() * 600), (Math.random() * 400), index);
-        }
+        if (shapeList[i].canvas == 1) {
+            if (shapeList[i].shape == 'Cross') {
+                var index = i;
+                drawNegative((Math.random() * 600), (Math.random() * 400), index);
+            }
 
-        if (shapeList[i].shape == 'Circle') {
-            var index = i;
-            drawPositive((Math.random() * 600), (Math.random() * 400), index);
-        }
+            if (shapeList[i].shape == 'Circle') {
+                var index = i;
+                drawPositive((Math.random() * 600), (Math.random() * 400), index);
+            }
 
-        if (shapeList[i].shape === 'Triangle') {
-            var index = i;
-            drawNeutral((Math.random() * 600), (Math.random() * 400), index);
+            if (shapeList[i].shape === 'Triangle') {
+                var index = i;
+                drawNeutral((Math.random() * 600), (Math.random() * 400), index);
+            }
         }
     }
 }
@@ -79,8 +73,8 @@ function drawNegative(x, y, index) {
     ctx.font = "15px Courier New";
     ctx.textAlign = "start";
     ctx.fillStyle = shapeList[index].color;
-    ctx.fillText(shapeList[index].word + " -" +shapeList[index].size, 675, fillTextSpace);
-    fillTextSpace = fillTextSpace+20;   
+    ctx.fillText(shapeList[index].word + " -" + shapeList[index].size, 675, fillTextSpace);
+    fillTextSpace = fillTextSpace + 20;
     ctx.globalAlpha = 0.75;
 }
 
@@ -98,7 +92,7 @@ function drawPositive(x, y, index) {
     ctx.textAlign = "start";
     ctx.fillStyle = shapeList[index].color;
     ctx.fillText(shapeList[index].word + " +" + shapeList[index].size, 675, fillTextSpace);
-    fillTextSpace = fillTextSpace+20;
+    fillTextSpace = fillTextSpace + 20;
     ctx.globalAlpha = 0.75;
 }
 
@@ -119,13 +113,6 @@ function drawNeutral(x, y, index) {
     ctx.textAlign = "start";
     ctx.fillStyle = shapeList[index].color;
     ctx.fillText(shapeList[index].word, 675, fillTextSpace);
-    fillTextSpace = fillTextSpace+20;
+    fillTextSpace = fillTextSpace + 20;
     ctx.globalAlpha = 0.75;
 }
-
-console.log("\'" + intToRGB(hashCode(shapeList[0].shape)) + "\'");
-ctx.fillStyle = "#" + intToRGB(hashCode(shapeList[0].shape));
-ctx.fillStyle = '#000000';
-ctx.fill();
-
-run();

@@ -5,9 +5,7 @@ var router = express.Router();
 // Information for the twitter API
 //-------------------------------------------
 var Twit = require('twit');
-var countLimit = 2;
-//var headlines = [];
-//var txt = [];
+var countLimit = 9;
 
 var T = new Twit({
     consumer_key: 'uo8Ex8A6kPqQSTU9mQ4JEDCwA',
@@ -27,8 +25,8 @@ var T = new Twit({
 var retext = require('retext');
 var inspect = require('unist-util-inspect');
 var sentiment = require('retext-sentiment');
+//Each rootNode holds one tweet string and sentiment data per tweet
 var rootNode = [];
-grabTweet();
 
 function grabTweet() {
     T.get('statuses/user_timeline', { screen_name: 'realDonaldTrump', count: countLimit }, function (err, data, response) {
@@ -39,7 +37,7 @@ function grabTweet() {
                 .use(function () {
                     return transformer;
                     function transformer(tree) {
-                        rootNode = tree;
+                        rootNode[i] = tree;
                         //console.log(inspect(tree));
                     }
                 }).processSync(data[i].text.replace(/\bhttp\S+/ig, ""));
@@ -58,13 +56,14 @@ router.get('/', function (req, res, next) {
 
 /* GET trump page. */
 router.get('/trump', function (req, res) {
+    grabTweet();
     var db = req.db;
     var collection = db.get('Ceong');
     const users = db.get('Ceong');
     users.remove({});
-    //Value of entire string is Math.abs(rootNode.data.polarity)
+    //Value of entire string is Math.abs(rootNode[z].data.polarity)
 
-    //Create all shapes per word, whitespace, or punctuation
+    //Create all shapes per word
     //Positive words: Circles
     //Neutral words: Triangles
     //Negative words: Upside-Down Crosses
@@ -73,69 +72,73 @@ router.get('/trump', function (req, res) {
     //For neutral colors, please refer to the Neutral Color Palette
 
     //Loop through all string nodes
-    //console.log(inspect(rootNode.children[0].children[0]));
-    for (var x = 0; x < rootNode.children[0].children.length; x++) {
-        //If children in node, then it is not whitespace.
-        if ("children" in rootNode.children[0].children[x]) {
-            //console.log(inspect(rootNode.children[0].children[x]));
-            for (var i = 0; i < rootNode.children[0].children[x].children.length; i++) {
-                //console.log("INSPECTING " + inspect(rootNode.children[0].children[2]));
-                //If string node has children, then terminal is not whitespace or punctuation node
-                if ("children" in rootNode.children[0].children[x].children[i]) {
-                    var newShapeObject = {};
-                    //Create new shape object
-                    //If string node has data, then terminal has sentiment value
-                    if ("data" in rootNode.children[0].children[x].children[i].children[0]) {
-                        //console.log("Sentiment Value Detected");
-                        //console.log("WORD: " + rootNode.children[0].children[0].children[i].children[0].value);
-                        //console.log("VALUE: " + rootNode.children[0].children[0].children[i].children[0].data.polarity);
+    for (var z = 0; z < countLimit; z++) {
+        for (var x = 0; x < rootNode[z].children[0].children.length; x++) {
+            //If children in node, then it is not whitespace.
+            if ("children" in rootNode[z].children[0].children[x]) {
+                //console.log(inspect(rootNode[z].children[0].children[x]));
+                for (var i = 0; i < rootNode[z].children[0].children[x].children.length; i++) {
+                    //console.log("INSPECTING " + inspect(rootNode[z].children[0].children[2]));
+                    //If string node has children, then terminal is not whitespace or punctuation node
+                    if ("children" in rootNode[z].children[0].children[x].children[i]) {
+                        var newShapeObject = {};
+                        //Create new shape object
+                        //If string node has data, then terminal has sentiment value
+                        if ("data" in rootNode[z].children[0].children[x].children[i].children[0]) {
+                            //console.log("Sentiment Value Detected");
+                            //console.log("WORD: " + rootNode[z].children[0].children[0].children[i].children[0].value);
+                            //console.log("VALUE: " + rootNode[z].children[0].children[0].children[i].children[0].data.polarity);
 
-                        //If positive
-                        if (rootNode.children[0].children[x].children[i].children[0].data.valence === 'positive') {
-                            newShapeObject.word = rootNode.children[0].children[x].children[i].children[0].value;
-                            newShapeObject.shape = 'Circle';
-                            //Size depends on how positive the element is
-                            newShapeObject.size = rootNode.children[0].children[x].children[i].children[0].data.polarity;
-                            //Color deends on how positve the element is
-                            newShapeObject.color = positiveColors[rootNode.children[0].children[x].children[i].children[0].data.polarity];
-                            //console.log("HERE WE ARE POSITIVE");
+                            //If positive
+                            if (rootNode[z].children[0].children[x].children[i].children[0].data.valence === 'positive') {
+                                newShapeObject.word = rootNode[z].children[0].children[x].children[i].children[0].value;
+                                newShapeObject.shape = 'Circle';
+                                //Size depends on how positive the element is
+                                newShapeObject.size = rootNode[z].children[0].children[x].children[i].children[0].data.polarity;
+                                //Color deends on how positve the element is
+                                newShapeObject.color = positiveColors[rootNode[z].children[0].children[x].children[i].children[0].data.polarity];
+                                newShapeObject.canvas = z;
+                                //console.log("HERE WE ARE POSITIVE");
+                                users.insert(newShapeObject);
+                            }
+                            //If negative
+                            if (rootNode[z].children[0].children[x].children[i].children[0].data.valence === 'negative') {
+                                newShapeObject.word = rootNode[z].children[0].children[x].children[i].children[0].value;
+                                newShapeObject.shape = 'Cross';
+                                newShapeObject.size = Math.abs(rootNode[z].children[0].children[x].children[i].children[0].data.polarity);
+                                newShapeObject.color = negativeColors[Math.abs(rootNode[z].children[0].children[x].children[i].children[0].data.polarity)];
+                                newShapeObject.canvas = z;
+                                users.insert(newShapeObject);
+                            }
+                        }
+                        //If node does not have data, then node is neutral
+                        else {
+                            //console.log("No Sentiment Value");
+                            //console.log("WORD: " + rootNode[z].children[0].children[0].children[i].children[0].value);
+                            //If neutral, then shape is triangle
+                            console.log("INSPECTING :" + inspect(rootNode[z].children[0].children[x].children[i].children[0]));
+                            newShapeObject.word = rootNode[z].children[0].children[x].children[i].children[0].value;
+                            newShapeObject.shape = 'Triangle';
+                            //If neutral, then size is 1
+                            newShapeObject.size = 1;
+                            //If neutral, then color is randomly chosen from neutral colors
+                            //console.log("Color: " + (Math.floor(Math.random() * 4) + 1));
+                            newShapeObject.color = neutralColors[Math.floor(Math.random() * 4) + 1];
+                            newShapeObject.canvas = z;
                             users.insert(newShapeObject);
                         }
-                        //If negative
-                        if (rootNode.children[0].children[x].children[i].children[0].data.valence === 'negative') {
-                            newShapeObject.word = rootNode.children[0].children[x].children[i].children[0].value;
-                            newShapeObject.shape = 'Cross';
-                            newShapeObject.size = Math.abs(rootNode.children[0].children[x].children[i].children[0].data.polarity);
-                            newShapeObject.color = negativeColors[Math.abs(rootNode.children[0].children[x].children[i].children[0].data.polarity)];
-                            users.insert(newShapeObject);
-                        }
-                    }
-                    //If node does not have data, then node is neutral
-                    else {
-                        //console.log("No Sentiment Value");
-                        //console.log("WORD: " + rootNode.children[0].children[0].children[i].children[0].value);
-                        //If neutral, then shape is triangle
-                        console.log("INSPECTING :" + inspect(rootNode.children[0].children[x].children[i].children[0]));
-                        newShapeObject.word = rootNode.children[0].children[x].children[i].children[0].value;
-                        newShapeObject.shape = 'Triangle';
-                        //If neutral, then size is 1
-                        newShapeObject.size = 1;
-                        //If neutral, then color is randomly chosen from neutral colors
-                        //console.log("Color: " + (Math.floor(Math.random() * 4) + 1));
-                        newShapeObject.color = neutralColors[Math.floor(Math.random() * 4) + 1];
-                        users.insert(newShapeObject);
                     }
                 }
             }
         }
     }
-    //users.insert(newShapeObject);
-    console.log(rootNode.data.polarity + " This is the data....");
-    users.find({}, {}, function (e, docs) {
-        res.render('trump', {
-            "datalist": docs
+    //while (checkBegin && checkEnd) {
+        users.find({}, {}, function (e, docs) {
+            res.render('trump', {
+                "datalist": docs
+            });
         });
-    });
+    //}
 });
 
 
