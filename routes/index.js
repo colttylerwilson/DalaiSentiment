@@ -8,11 +8,12 @@ var Twit = require('twit');
 var countLimit = 9;
 
 var T = new Twit({
-    consumer_key: 'uo8Ex8A6kPqQSTU9mQ4JEDCwA',
-    consumer_secret: 'eoAftf2tIevLIxizgY7ku4qwn9lkVJtC8PbppR30ye0Kp89D3S',
-    access_token: '835704017384685569-946BgoVOlUWSNXhCmFKwNNDm2FCzwYz',
-    access_token_secret: '5equQy78EhdnBOXWrhvtUCd6EW4Y4f7Lqfzyeg4EEDB6Z',
-    timeout_ms: 60 * 1000,  // optional HTTP request timeout to apply to all requests.
+    //PUT TWITTER INFO HERE
+    //consumer_key: '',
+    //consumer_secret: '',
+    //access_token: '',
+    //access_token_secret: '',
+    //timeout_ms: 60 * 1000,  // optional HTTP request timeout to apply to all requests.
 })
 //-------------------------------------------
 // END of Information for the twitter API
@@ -29,7 +30,7 @@ var sentiment = require('retext-sentiment');
 var rootNode = [];
 grabTweet();
 function grabTweet() {
-    T.get('statuses/user_timeline', { screen_name: 'ANP14', count: countLimit }, function (err, data, response) {
+    T.get('statuses/user_timeline', { screen_name: 'DalaiLama', count: countLimit }, function (err, data, response) {
         for (var i = 0; i < countLimit; i++) {
             console.log("The tweet....\n" + data[i].text.replace(/\bhttp\S+/ig, "") + "\n");
             retext()
