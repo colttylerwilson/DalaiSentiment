@@ -9,11 +9,11 @@ var countLimit = 9;
 
 var T = new Twit({
     //PUT TWITTER INFO HERE
-    //consumer_key: '',
-    //consumer_secret: '',
-    //access_token: '',
-    //access_token_secret: '',
-    //timeout_ms: 60 * 1000,  // optional HTTP request timeout to apply to all requests.
+    consumer_key: 'uo8Ex8A6kPqQSTU9mQ4JEDCwA',
+    consumer_secret: 'eoAftf2tIevLIxizgY7ku4qwn9lkVJtC8PbppR30ye0Kp89D3S',
+    access_token: '835704017384685569-946BgoVOlUWSNXhCmFKwNNDm2FCzwYz',
+    access_token_secret: '5equQy78EhdnBOXWrhvtUCd6EW4Y4f7Lqfzyeg4EEDB6Z',
+    timeout_ms: 60 * 1000,  // optional HTTP request timeout to apply to all requests.
 })
 //-------------------------------------------
 // END of Information for the twitter API
@@ -39,7 +39,7 @@ function grabTweet() {
                     return transformer;
                     function transformer(tree) {
                         rootNode[i] = tree;
-                        //console.log(inspect(tree));
+                        console.log(inspect(tree));
                     }
                 }).processSync(data[i].text.replace(/\bhttp\S+/ig, ""));
         }
